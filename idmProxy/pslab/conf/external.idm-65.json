@@ -1,0 +1,7 @@
+{
+    "enabled" : true,
+    "authType" : "basic",
+    "instanceUrl" : "http://idm65.example.com:7272/openidm/",
+    "userName" : "openidm-admin",
+    "password" : "openidm-admin"
+}

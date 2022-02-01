@@ -1,0 +1,225 @@
+{
+    "mappings" : [
+        {
+            "name" : "onprem_to_fidc_alpha",
+            "source" : "external/idm/65/managed/user",
+            "target" : "external/idm/fidc/managed/alpha_user",
+            "sourceQueryFullEntry" : true,
+            "sourceQuery": {
+                                "_queryFilter" : "true"
+                    },
+            "targetQuery": {
+                                "_queryFilter" : "true"
+                    },
+            "targetQueryFullEntry" : true,
+            "taskThreads" : 20,
+            "properties" : [
+                {
+                    "source" : "_id",
+                    "target" : "_id"
+                },
+                {
+                    "source" : "userName",
+                    "target" : "userName"
+                },
+                {
+                    "source" : "givenName",
+                    "target" : "givenName"
+                },
+                {
+                    "source" : "sn",
+                    "target" : "sn"
+                },
+                {
+                    "source" : "",
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "source" : "source.displayName || (source.givenName + ' ' + source.sn);"
+                    },
+                    "target" : "cn"
+                },
+                {
+                    "source" : "description",
+                    "target" : "description",
+                    "condition" : {
+                        "type" : "text/javascript",
+                        "source" : "!!object.description"
+                    }
+                },
+                {
+                    "source" : "mail",
+                    "target" : "mail"
+                },
+                {
+                    "source" : "password",
+                    "condition" : {
+                        "type" : "text/javascript",
+                        "source" : "object.password != null"
+                    },
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "source" : "openidm.decrypt(source);"
+                    },
+                    "target" : "password"
+                },
+                {
+                    "source" : "telephoneNumber",
+                    "target" : "telephoneNumber",
+                    "condition" : {
+                        "type" : "text/javascript",
+                        "source" : "!!object.telephoneNumber"
+                    }
+                },
+                {
+                    "target" : "roles",
+                    "source" : "effectiveRoles",
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "source.map(function (r) { return {\"_ref\": r._ref.replace(\"role\", \"alpha_role\")}; })"
+                    }
+                }
+            ],
+            "policies" : [
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "AMBIGUOUS"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "SOURCE_MISSING"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "FOUND_ALREADY_LINKED"
+                },
+                {
+                    "action" : "DELETE",
+                    "situation" : "UNQUALIFIED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "UNASSIGNED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "LINK_ONLY"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "TARGET_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "SOURCE_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "ALL_GONE"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "CONFIRMED"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "FOUND"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "ABSENT"
+                }
+            ],
+            "allowEmptySourceSet" : true,
+            "prefetchLinks" : false
+        },
+        {
+            "target" : "external/idm/fidc/managed/alpha_role",
+            "source" : "external/idm/65/repo/managed/role",
+            "name" : "onpremmanagedRole_FIDCmanagedRole",
+            "consentRequired" : false,
+            "icon" : null,
+            "displayName" : "onpremmanagedRole_FIDCmanagedRole",
+            "properties" : [
+                {
+                    "source" : "_id",
+                    "target" : "_id"
+                },
+                {
+                    "source" : "description",
+                    "target" : "description"
+                },
+                {
+                    "source" : "members",
+                    "target" : "members"
+                },
+                {
+                    "source" : "name",
+                    "target" : "name"
+                },
+                {
+                    "source" : "category",
+                    "target" : "category"
+                }
+            ],
+            "policies" : [
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "AMBIGUOUS"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "SOURCE_MISSING"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "FOUND_ALREADY_LINKED"
+                },
+                {
+                    "action" : "DELETE",
+                    "situation" : "UNQUALIFIED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "UNASSIGNED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "LINK_ONLY"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "TARGET_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "SOURCE_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "ALL_GONE"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "CONFIRMED"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "FOUND"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "ABSENT"
+                }
+            ]
+        }
+    ]
+}

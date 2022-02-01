@@ -1,0 +1,11 @@
+{
+    "enabled" : true,
+    "authType" : "bearer",
+    "instanceUrl" : "https://openam-dss-charan.forgeblocks.com/openidm/",
+    "clientId" : "OnPremIDM",
+    "clientSecret" : "password",
+    "scope" : [
+        "fr:idm:*"
+    ],
+    "tokenEndpoint" : "https://openam-dss-charan.forgeblocks.com/am/oauth2/realms/root/realms/alpha/access_token"
+}

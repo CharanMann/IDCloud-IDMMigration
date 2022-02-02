@@ -1,23 +1,11 @@
 {
     "mappings" : [
         {
-            "name" : "onprem_to_fidc_alpha",
+            "name" : "onprem_user_to_fidc_alpha_user",
             "source" : "external/idm/65/managed/user",
             "target" : "external/idm/fidc/managed/alpha_user",
-            "sourceQueryFullEntry" : true,
-            "sourceQuery": {
-                                "_queryFilter" : "true"
-                    },
-            "targetQuery": {
-                                "_queryFilter" : "true"
-                    },
-            "targetQueryFullEntry" : true,
             "taskThreads" : 20,
             "properties" : [
-                {
-                    "source" : "_id",
-                    "target" : "_id"
-                },
                 {
                     "source" : "userName",
                     "target" : "userName"
@@ -31,12 +19,13 @@
                     "target" : "sn"
                 },
                 {
-                    "source" : "",
                     "transform" : {
                         "type" : "text/javascript",
-                        "source" : "source.displayName || (source.givenName + ' ' + source.sn);"
+                        "globals" : { },
+                        "source" : "source.givenName + ' ' + source.sn;"
                     },
-                    "target" : "cn"
+                    "target" : "cn",
+                    "source" : ""
                 },
                 {
                     "source" : "description",
@@ -51,32 +40,11 @@
                     "target" : "mail"
                 },
                 {
-                    "source" : "password",
-                    "condition" : {
-                        "type" : "text/javascript",
-                        "source" : "object.password != null"
-                    },
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "source" : "openidm.decrypt(source);"
-                    },
-                    "target" : "password"
-                },
-                {
                     "source" : "telephoneNumber",
                     "target" : "telephoneNumber",
                     "condition" : {
                         "type" : "text/javascript",
                         "source" : "!!object.telephoneNumber"
-                    }
-                },
-                {
-                    "target" : "roles",
-                    "source" : "effectiveRoles",
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "source.map(function (r) { return {\"_ref\": r._ref.replace(\"role\", \"alpha_role\")}; })"
                     }
                 }
             ],
@@ -90,7 +58,7 @@
                     "situation" : "SOURCE_MISSING"
                 },
                 {
-                    "action" : "CREATE",
+                    "action" : "EXCEPTION",
                     "situation" : "MISSING"
                 },
                 {
@@ -134,16 +102,25 @@
                     "situation" : "ABSENT"
                 }
             ],
-            "allowEmptySourceSet" : true,
-            "prefetchLinks" : false
+            "correlationQuery" : [
+                {
+                    "linkQualifier" : "default",
+                    "expressionTree" : {
+                        "all" : [
+                            "userName"
+                        ]
+                    },
+                    "mapping" : "onprem_user_to_fidc_alpha_user",
+                    "type" : "text/javascript",
+                    "file" : "ui/correlateTreeToQueryFilter.js"
+                }
+            ]
         },
         {
+            "name" : "onprem_role_to_fidc_alpha_role",
             "target" : "external/idm/fidc/managed/alpha_role",
             "source" : "external/idm/65/repo/managed/role",
-            "name" : "onpremmanagedRole_FIDCmanagedRole",
             "consentRequired" : false,
-            "icon" : null,
-            "displayName" : "onpremmanagedRole_FIDCmanagedRole",
             "properties" : [
                 {
                     "source" : "_id",
@@ -154,16 +131,8 @@
                     "target" : "description"
                 },
                 {
-                    "source" : "members",
-                    "target" : "members"
-                },
-                {
                     "source" : "name",
                     "target" : "name"
-                },
-                {
-                    "source" : "category",
-                    "target" : "category"
                 }
             ],
             "policies" : [
@@ -176,7 +145,7 @@
                     "situation" : "SOURCE_MISSING"
                 },
                 {
-                    "action" : "CREATE",
+                    "action" : "EXCEPTION",
                     "situation" : "MISSING"
                 },
                 {

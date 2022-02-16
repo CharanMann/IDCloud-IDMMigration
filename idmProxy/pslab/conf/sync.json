@@ -4,7 +4,6 @@
             "name" : "onprem_user_to_fidc_alpha_user",
             "source" : "external/idm/65/managed/user",
             "target" : "external/idm/fidc/managed/alpha_user",
-            "taskThreads" : 20,
             "properties" : [
                 {
                     "source" : "userName",
@@ -119,8 +118,11 @@
         {
             "name" : "onprem_role_to_fidc_alpha_role",
             "target" : "external/idm/fidc/managed/alpha_role",
-            "source" : "external/idm/65/repo/managed/role",
-            "consentRequired" : false,
+            "source" : "external/idm/65/managed/role",
+            "sourceQuery" : {
+                "_queryFilter" : true,
+                "_fields" : "*,*_ref"
+            },
             "properties" : [
                 {
                     "source" : "_id",
@@ -133,6 +135,92 @@
                 {
                     "source" : "name",
                     "target" : "name"
+                },
+                {
+                    "target" : "assignments",
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "logger.info(\"Source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar query, assignmentRef;\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n    query = {'_queryFilter': '_id eq \\\"' + assignment._refResourceId + '\\\"'};  \n    logger.info(\"Assignments query filter: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"external/idm/65/managed/assignment\", query);\n    \n    logger.info(\"Assignments query results: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n  \t\tassignmentRef = queryResult.result[0]._id;\n        assignmentRefs.push({\"_ref\":\"managed/alpha_assignment/\" + assignmentRef})\n\t}\n  }  \n}\n\nlogger.info(\"Assignments Refs: \" + assignmentRefs);\n\nassignmentRefs;"
+                    },
+                    "source" : ""
+                }
+            ],
+            "policies" : [
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "AMBIGUOUS"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "SOURCE_MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "FOUND_ALREADY_LINKED"
+                },
+                {
+                    "action" : "DELETE",
+                    "situation" : "UNQUALIFIED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "UNASSIGNED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "LINK_ONLY"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "TARGET_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "SOURCE_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "ALL_GONE"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "CONFIRMED"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "FOUND"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "ABSENT"
+                }
+            ]
+        },
+        {
+            "name" : "onprem_asgn_to_fidc_alpha_asgn",
+            "target" : "external/idm/fidc/managed/alpha_assignment",
+            "source" : "external/idm/65/managed/assignment",
+            "properties" : [
+                {
+                    "source" : "_id",
+                    "target" : "_id"
+                },
+                {
+                    "source" : "description",
+                    "target" : "description"
+                },
+                {
+                    "source" : "name",
+                    "target" : "name"
+                },
+                {
+                    "target" : "mapping",
+                    "default" : "managedAlpha_user_managedAlpha_user"
                 }
             ],
             "policies" : [

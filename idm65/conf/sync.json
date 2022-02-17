@@ -26,10 +26,6 @@
                     "target" : "description"
                 },
                 {
-                    "source" : "_id",
-                    "target" : "_id"
-                },
-                {
                     "source" : "name",
                     "target" : "userName"
                 },
@@ -52,36 +48,56 @@
             ],
             "policies" : [
                 {
-                    "situation" : "CONFIRMED",
-                    "action" : "UPDATE"
+                    "action" : "EXCEPTION",
+                    "situation" : "AMBIGUOUS"
                 },
                 {
-                    "situation" : "FOUND",
-                    "action" : "IGNORE"
+                    "action" : "EXCEPTION",
+                    "situation" : "SOURCE_MISSING"
                 },
                 {
-                    "situation" : "ABSENT",
-                    "action" : "CREATE"
+                    "action" : "EXCEPTION",
+                    "situation" : "MISSING"
                 },
                 {
-                    "situation" : "AMBIGUOUS",
-                    "action" : "IGNORE"
+                    "action" : "EXCEPTION",
+                    "situation" : "FOUND_ALREADY_LINKED"
                 },
                 {
-                    "situation" : "MISSING",
-                    "action" : "IGNORE"
+                    "action" : "DELETE",
+                    "situation" : "UNQUALIFIED"
                 },
                 {
-                    "situation" : "SOURCE_MISSING",
-                    "action" : "IGNORE"
+                    "action" : "EXCEPTION",
+                    "situation" : "UNASSIGNED"
                 },
                 {
-                    "situation" : "UNQUALIFIED",
-                    "action" : "IGNORE"
+                    "action" : "EXCEPTION",
+                    "situation" : "LINK_ONLY"
                 },
                 {
-                    "situation" : "UNASSIGNED",
-                    "action" : "IGNORE"
+                    "action" : "IGNORE",
+                    "situation" : "TARGET_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "SOURCE_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "ALL_GONE"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "CONFIRMED"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "FOUND"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "ABSENT"
                 }
             ]
         }

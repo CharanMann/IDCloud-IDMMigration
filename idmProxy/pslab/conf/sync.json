@@ -97,7 +97,7 @@
                     "situation" : "FOUND"
                 },
                 {
-                    "action" : "IGNORE",
+                    "action" : "CREATE",
                     "situation" : "ABSENT"
                 }
             ],
@@ -230,6 +230,15 @@
                 {
                     "target" : "mapping",
                     "default" : "managedAlpha_user_managedAlpha_user"
+                },
+                {
+                    "target" : "attributes",
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "var attributes = [];\n\nattributes.push({\"assignmentOperation\":\"mergeWithTarget\", \"name\": \"frUnindexedMultivalued1\",\"unassignmentOperation\": \"removeFromTarget\",\"value\": [source.name]})\n\nlogger.info(\"Asgn attributes: \" + attributes);\n\nattributes;"
+                    },
+                    "source" : ""
                 }
             ],
             "policies" : [

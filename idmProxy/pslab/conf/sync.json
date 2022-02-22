@@ -79,13 +79,9 @@
             ]
         },
         {
-            "name" : "onprem_role_to_fidc_alpha_role",
-            "target" : "external/idm/fidc/managed/alpha_role",
-            "source" : "external/idm/65/managed/role",
-            "sourceQuery" : {
-                "_queryFilter" : true,
-                "_fields" : "*,*_ref"
-            },
+            "name" : "onprem_asgn_to_fidc_alpha_asgn",
+            "target" : "external/idm/fidc/managed/alpha_assignment",
+            "source" : "external/idm/65/managed/assignment",
             "properties" : [
                 {
                     "source" : "_id",
@@ -100,20 +96,15 @@
                     "target" : "name"
                 },
                 {
-                    "target" : "assignments",
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "logger.info(\"Creating Roles<->Assignments relationships, source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar assignmentRef;\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n    \n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_asgn_to_fidc_alpha_asgn\\\" AND firstId eq \\\"' + assignment._refResourceId + '\\\"'};  \n    logger.info(\"Assignments: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Assignments: query results from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        assignmentRef = queryResult.result[0].secondId;  \n        assignmentRefs.push({\"_ref\":\"managed/alpha_assignment/\" + assignmentRef})\n\t}\n  }  \n}\n\nlogger.info(\"Assignments Refs: \" + assignmentRefs);\n\nassignmentRefs;"
-                    },
-                    "source" : ""
+                    "target" : "mapping",
+                    "default" : "managedAlpha_user_managedAlpha_user"
                 },
                 {
-                    "target" : "members",
+                    "target" : "attributes",
                     "transform" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "source" : "logger.info(\"Creating Roles<->Members relationships, source Members: \" + source.members);\nvar memberRefs = [];\nvar query, memberRef, userName;\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_user_to_fidc_alpha_user\\\" AND firstId eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Members: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Members: query results from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        memberRef = queryResult.result[0].secondId;  \n        memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n\t}\n  }  \n}\n\nlogger.info(\"Members Refs: \" + memberRefs);\n\nmemberRefs;"
+                        "source" : "var attributes = [];\n\nattributes.push({\"assignmentOperation\":\"mergeWithTarget\", \"name\": \"frIndexedMultivalued2\",\"unassignmentOperation\": \"removeFromTarget\",\"value\": [source.name]})\n\nlogger.info(\"Asgn attributes: \" + attributes);\n\nattributes;"
                     },
                     "source" : ""
                 }
@@ -174,9 +165,13 @@
             ]
         },
         {
-            "name" : "onprem_asgn_to_fidc_alpha_asgn",
-            "target" : "external/idm/fidc/managed/alpha_assignment",
-            "source" : "external/idm/65/managed/assignment",
+            "name" : "onprem_role_to_fidc_alpha_role",
+            "target" : "external/idm/fidc/managed/alpha_role",
+            "source" : "external/idm/65/managed/role",
+            "sourceQuery" : {
+                "_queryFilter" : true,
+                "_fields" : "*,*_ref"
+            },
             "properties" : [
                 {
                     "source" : "_id",
@@ -191,15 +186,20 @@
                     "target" : "name"
                 },
                 {
-                    "target" : "mapping",
-                    "default" : "managedAlpha_user_managedAlpha_user"
-                },
-                {
-                    "target" : "attributes",
+                    "target" : "assignments",
                     "transform" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "source" : "var attributes = [];\n\nattributes.push({\"assignmentOperation\":\"mergeWithTarget\", \"name\": \"frIndexedMultivalued2\",\"unassignmentOperation\": \"removeFromTarget\",\"value\": [source.name]})\n\nlogger.info(\"Asgn attributes: \" + attributes);\n\nattributes;"
+                        "source" : "logger.info(\"Creating Roles<->Assignments relationships, source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar assignmentRef;\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n    \n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_asgn_to_fidc_alpha_asgn\\\" AND firstId eq \\\"' + assignment._refResourceId + '\\\"'};  \n    logger.info(\"Assignments: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Assignments: query results from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        assignmentRef = queryResult.result[0].secondId;  \n        assignmentRefs.push({\"_ref\":\"managed/alpha_assignment/\" + assignmentRef})\n\t}\n  }  \n}\n\nlogger.info(\"Assignments Refs: \" + assignmentRefs);\n\nassignmentRefs;"
+                    },
+                    "source" : ""
+                },
+                {
+                    "target" : "members",
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "logger.info(\"Creating Roles<->Members relationships, source Members: \" + source.members);\nvar memberRefs = [];\nvar query, memberRef, userName;\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_user_to_fidc_alpha_user\\\" AND firstId eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Members: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Members: query results from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        memberRef = queryResult.result[0].secondId;  \n        memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n\t}\n  }  \n}\n\nlogger.info(\"Members Refs: \" + memberRefs);\n\nmemberRefs;"
                     },
                     "source" : ""
                 }

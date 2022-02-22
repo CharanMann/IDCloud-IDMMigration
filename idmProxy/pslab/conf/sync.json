@@ -8,43 +8,6 @@
                 {
                     "source" : "userName",
                     "target" : "userName"
-                },
-                {
-                    "source" : "givenName",
-                    "target" : "givenName"
-                },
-                {
-                    "source" : "sn",
-                    "target" : "sn"
-                },
-                {
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "source.givenName + ' ' + source.sn;"
-                    },
-                    "target" : "cn",
-                    "source" : ""
-                },
-                {
-                    "source" : "description",
-                    "target" : "description",
-                    "condition" : {
-                        "type" : "text/javascript",
-                        "source" : "!!object.description"
-                    }
-                },
-                {
-                    "source" : "mail",
-                    "target" : "mail"
-                },
-                {
-                    "source" : "telephoneNumber",
-                    "target" : "telephoneNumber",
-                    "condition" : {
-                        "type" : "text/javascript",
-                        "source" : "!!object.telephoneNumber"
-                    }
                 }
             ],
             "policies" : [
@@ -97,7 +60,7 @@
                     "situation" : "FOUND"
                 },
                 {
-                    "action" : "CREATE",
+                    "action" : "IGNORE",
                     "situation" : "ABSENT"
                 }
             ],
@@ -105,7 +68,7 @@
                 {
                     "linkQualifier" : "default",
                     "expressionTree" : {
-                        "all" : [
+                        "any" : [
                             "userName"
                         ]
                     },
@@ -141,7 +104,7 @@
                     "transform" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "source" : "logger.info(\"Source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar assignmentRef;\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n  \t\tassignmentRef = assignment._refResourceId;\n        assignmentRefs.push({\"_ref\":\"managed/alpha_assignment/\" + assignmentRef})\n  }  \n}\n\nlogger.info(\"Assignments Refs: \" + assignmentRefs);\n\nassignmentRefs;"
+                        "source" : "logger.info(\"Creating Roles<->Assignments relationships, source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar assignmentRef;\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n    \n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_asgn_to_fidc_alpha_asgn\\\" AND firstId eq \\\"' + assignment._refResourceId + '\\\"'};  \n    logger.info(\"Assignments: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Assignments: query results from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        assignmentRef = queryResult.result[0].secondId;  \n        assignmentRefs.push({\"_ref\":\"managed/alpha_assignment/\" + assignmentRef})\n\t}\n  }  \n}\n\nlogger.info(\"Assignments Refs: \" + assignmentRefs);\n\nassignmentRefs;"
                     },
                     "source" : ""
                 },
@@ -150,7 +113,7 @@
                     "transform" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "source" : "logger.info(\"Source Members: \" + source.members);\nvar memberRefs = [];\nvar query, memberRef, userName;\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve userName from on-prem IDM\n    query = {'_queryFilter': '_id eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Member query filter for on-prem IDM: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"external/idm/65/managed/user\", query);\n    \n    logger.info(\"Member query results from on-prem IDM: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        // Retrieve _id from ID Cloud\n        userName = queryResult.result[0].userName; \n        query = {'_queryFilter': 'userName eq \\\"' + userName + '\\\"'};  \n        logger.info(\"Member query filter for ID Cloud: \" + query._queryFilter);\n      \n        queryResult = openidm.query(\"external/idm/fidc/managed/alpha_user\", query);\n        logger.info(\"Member query results from Cloud IDM: \" + queryResult);\n      \n  \t\tif (queryResult.resultCount >= 1) {\n           memberRef = queryResult.result[0]._id; \n           memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n        }\n\t}\n  }  \n}\n\nlogger.info(\"Members Refs: \" + memberRefs);\n\nmemberRefs;"
+                        "source" : "logger.info(\"Creating Roles<->Members relationships, source Members: \" + source.members);\nvar memberRefs = [];\nvar query, memberRef, userName;\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_user_to_fidc_alpha_user\\\" AND firstId eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Members: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Members: query results from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        memberRef = queryResult.result[0].secondId;  \n        memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n\t}\n  }  \n}\n\nlogger.info(\"Members Refs: \" + memberRefs);\n\nmemberRefs;"
                     },
                     "source" : ""
                 }
@@ -236,7 +199,7 @@
                     "transform" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "source" : "var attributes = [];\n\nattributes.push({\"assignmentOperation\":\"mergeWithTarget\", \"name\": \"frUnindexedMultivalued1\",\"unassignmentOperation\": \"removeFromTarget\",\"value\": [source.name]})\n\nlogger.info(\"Asgn attributes: \" + attributes);\n\nattributes;"
+                        "source" : "var attributes = [];\n\nattributes.push({\"assignmentOperation\":\"mergeWithTarget\", \"name\": \"frIndexedMultivalued2\",\"unassignmentOperation\": \"removeFromTarget\",\"value\": [source.name]})\n\nlogger.info(\"Asgn attributes: \" + attributes);\n\nattributes;"
                     },
                     "source" : ""
                 }

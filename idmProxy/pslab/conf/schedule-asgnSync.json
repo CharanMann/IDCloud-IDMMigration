@@ -1,0 +1,18 @@
+{
+    "isCron" : true,
+    "enabled" : true,
+    "persisted" : true,
+    "type" : "cron",
+    "misfirePolicy" : "fireAndProceed",
+    "invokeService" : "sync",
+    "invokeLogLevel" : "info",
+    "timeZone" : null,
+    "startTime" : null,
+    "endTime" : null,
+    "concurrentExecution" : false,
+    "invokeContext" : {
+        "action" : "reconcile",
+        "mapping" : "onprem_asgn_to_fidc_alpha_asgn"
+    },
+    "schedule" : "0 0 1 * * ?"
+}

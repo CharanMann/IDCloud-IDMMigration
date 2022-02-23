@@ -84,10 +84,6 @@
             "source" : "external/idm/65/managed/assignment",
             "properties" : [
                 {
-                    "source" : "_id",
-                    "target" : "_id"
-                },
-                {
                     "source" : "description",
                     "target" : "description"
                 },
@@ -162,6 +158,19 @@
                     "action" : "CREATE",
                     "situation" : "ABSENT"
                 }
+            ],
+            "correlationQuery" : [
+                {
+                    "linkQualifier" : "default",
+                    "expressionTree" : {
+                        "any" : [
+                            "name"
+                        ]
+                    },
+                    "mapping" : "onprem_asgn_to_fidc_alpha_asgn",
+                    "type" : "text/javascript",
+                    "file" : "ui/correlateTreeToQueryFilter.js"
+                }
             ]
         },
         {
@@ -173,10 +182,6 @@
                 "_fields" : "*,*_ref"
             },
             "properties" : [
-                {
-                    "source" : "_id",
-                    "target" : "_id"
-                },
                 {
                     "source" : "description",
                     "target" : "description"
@@ -256,6 +261,19 @@
                 {
                     "action" : "CREATE",
                     "situation" : "ABSENT"
+                }
+            ],
+            "correlationQuery" : [
+                {
+                    "linkQualifier" : "default",
+                    "expressionTree" : {
+                        "any" : [
+                            "name"
+                        ]
+                    },
+                    "mapping" : "onprem_role_to_fidc_alpha_role",
+                    "type" : "text/javascript",
+                    "file" : "ui/correlateTreeToQueryFilter.js"
                 }
             ]
         }

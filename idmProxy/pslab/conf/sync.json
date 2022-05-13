@@ -177,10 +177,9 @@
             "name" : "onprem_role_to_fidc_alpha_role",
             "target" : "external/idm/fidc/managed/alpha_role",
             "source" : "external/idm/65/managed/role",
-            "sourceQuery" : {
-                "_queryFilter" : true,
-                "_fields" : "*,*_ref"
-            },
+            "reconSourceQueryPaging" : true,
+            "reconSourceQueryPageSize" : 10000,
+            "clusteredSourceReconEnabled" : true,
             "properties" : [
                 {
                     "source" : "description",
@@ -189,24 +188,6 @@
                 {
                     "source" : "name",
                     "target" : "name"
-                },
-                {
-                    "target" : "assignments",
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "logger.info(\"Creating Roles<->Assignments relationships for role: \" + source.name + \" ,source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar assignmentRef;\nconst uniqueRefs = new Set();\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n    \n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_asgn_to_fidc_alpha_asgn\\\" AND firstId eq \\\"' + assignment._refResourceId + '\\\"'};  \n    logger.info(\"Assignments: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Assignments: query results for role: \" + source.name + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        assignmentRef =  queryResult.result[0].secondId;  \n        \n        if (!uniqueRefs.has(assignmentRef)){\n                  assignmentRefs.push({\"_ref\": \"managed/alpha_assignment/\" + assignmentRef})\n                  uniqueRefs.add(assignmentRef)\n                  logger.info(\"Added assignment ref : \" + assignmentRef);\n        } else {\n          logger.info(\"Duplicate assignment ref found, ignoring: \" + assignmentRef);\n        }\n\t}\n  }  \n}\n  \nassignmentRefs;"
-                    },
-                    "source" : ""
-                },
-                {
-                    "target" : "members",
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "logger.info(\"Creating Roles<->Members relationships for role: \" + source.name + \" ,source Members: \" + source.members);\n\nvar memberRefs = [];\nvar query, memberRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_user_to_fidc_alpha_user\\\" AND firstId eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Members: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Members: query results for role: \" + source.name + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        memberRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(memberRef)){\n                  memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n                  uniqueRefs.add(memberRef)\n                  logger.info(\"Added member ref : \" + memberRef);\n        } else {\n          logger.info(\"Duplicate member ref found, ignoring: \" + memberRef);\n        }\n\t}\n    \n  }  \n}\n\n\n\nmemberRefs;"
-                    },
-                    "source" : ""
                 }
             ],
             "policies" : [
@@ -275,7 +256,211 @@
                     "type" : "text/javascript",
                     "file" : "ui/correlateTreeToQueryFilter.js"
                 }
-            ]
+            ],
+            "onUpdate" : {
+                "type" : "text/javascript",
+                "globals" : { },
+                "source" : "logger.warn('Target role object: = {} ', target);"
+            }
+        },
+        {
+            "name" : "onprem_role_to_fidc_alpha_role_assignments",
+            "target" : "external/idm/fidc/managed/alpha_role",
+            "source" : "external/idm/65/managed/role",
+            "sourceQuery" : {
+                "_queryFilter" : true,
+                "_fields" : "*,*_ref"
+            },
+            "reconSourceQueryPaging" : true,
+            "reconSourceQueryPageSize" : 10000,
+            "clusteredSourceReconEnabled" : true,
+            "properties" : [
+                {
+                    "source" : "name",
+                    "target" : "name"
+                },
+                {
+                    "target" : "assignments",
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "logger.info(\"Creating Roles<->Assignments relationships for role: \" + source.name + \" ,source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar assignmentRef;\nconst uniqueRefs = new Set();\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n    \n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_asgn_to_fidc_alpha_asgn\\\" AND firstId eq \\\"' + assignment._refResourceId + '\\\"'};  \n    logger.info(\"Assignments: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Assignments: query results for role: \" + source.name + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        assignmentRef =  queryResult.result[0].secondId;  \n        \n        if (!uniqueRefs.has(assignmentRef)){\n                  assignmentRefs.push({\"_ref\": \"managed/alpha_assignment/\" + assignmentRef})\n                  uniqueRefs.add(assignmentRef)\n                  logger.info(\"Added assignment ref : \" + assignmentRef);\n        } else {\n          logger.info(\"Duplicate assignment ref found, ignoring: \" + assignmentRef);\n        }\n\t}\n  }  \n}\n  \nassignmentRefs;"
+                    },
+                    "source" : ""
+                }
+            ],
+            "policies" : [
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "AMBIGUOUS"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "SOURCE_MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "FOUND_ALREADY_LINKED"
+                },
+                {
+                    "action" : "DELETE",
+                    "situation" : "UNQUALIFIED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "UNASSIGNED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "LINK_ONLY"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "TARGET_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "SOURCE_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "ALL_GONE"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "CONFIRMED"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "FOUND"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "ABSENT"
+                }
+            ],
+            "correlationQuery" : [
+                {
+                    "linkQualifier" : "default",
+                    "expressionTree" : {
+                        "any" : [
+                            "name"
+                        ]
+                    },
+                    "mapping" : "onprem_role_to_fidc_alpha_role_assignments",
+                    "type" : "text/javascript",
+                    "file" : "ui/correlateTreeToQueryFilter.js"
+                }
+            ],
+            "onUpdate" : {
+                "type" : "text/javascript",
+                "globals" : { },
+                "source" : "logger.warn('Target role object with assignments: = {} ', target);"
+            }
+        },
+        {
+            "name" : "onprem_role_to_fidc_alpha_role_members",
+            "target" : "external/idm/fidc/managed/alpha_role",
+            "source" : "external/idm/65/managed/role",
+            "taskThreads" : 2,
+            "sourceQuery" : {
+                "_queryFilter" : true,
+                "_fields" : "*,*_ref"
+            },
+            "reconSourceQueryPaging" : true,
+            "reconSourceQueryPageSize" : 10000,
+            "clusteredSourceReconEnabled" : true,
+            "properties" : [
+                {
+                    "source" : "name",
+                    "target" : "name"
+                },
+                {
+                    "target" : "members",
+                    "transform" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "logger.info(\"Creating Roles<->Members relationships for role: \" + source.name + \" ,source Members: \" + source.members);\n\nvar memberRefs = [];\nvar query, memberRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_user_to_fidc_alpha_user\\\" AND firstId eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Members: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Members: query results for role: \" + source.name + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        memberRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(memberRef)){\n                  memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n                  uniqueRefs.add(memberRef)\n                  logger.info(\"Added member ref : \" + memberRef);\n        } else {\n          logger.info(\"Duplicate member ref found, ignoring: \" + memberRef);\n        }\n\t}\n    \n  }  \n}\n\n\n\nmemberRefs;"
+                        },
+                    "source" : ""
+                }
+            ],
+            "policies" : [
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "AMBIGUOUS"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "SOURCE_MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "MISSING"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "FOUND_ALREADY_LINKED"
+                },
+                {
+                    "action" : "DELETE",
+                    "situation" : "UNQUALIFIED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "UNASSIGNED"
+                },
+                {
+                    "action" : "EXCEPTION",
+                    "situation" : "LINK_ONLY"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "TARGET_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "SOURCE_IGNORED"
+                },
+                {
+                    "action" : "IGNORE",
+                    "situation" : "ALL_GONE"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "CONFIRMED"
+                },
+                {
+                    "action" : "UPDATE",
+                    "situation" : "FOUND"
+                },
+                {
+                    "action" : "CREATE",
+                    "situation" : "ABSENT"
+                }
+            ],
+            "correlationQuery" : [
+                {
+                    "linkQualifier" : "default",
+                    "expressionTree" : {
+                        "any" : [
+                            "name"
+                        ]
+                    },
+                    "mapping" : "onprem_role_to_fidc_alpha_role_members",
+                    "type" : "text/javascript",
+                    "file" : "ui/correlateTreeToQueryFilter.js"
+                }
+            ],
+            "onUpdate" : {
+                "type" : "text/javascript",
+                "globals" : { },
+                "source" : "logger.warn('Target role object with members: = {} ', target);"
+            }
         }
     ]
 }

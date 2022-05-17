@@ -94,15 +94,6 @@
                 {
                     "target" : "mapping",
                     "default" : "managedAlpha_user_managedAlpha_user"
-                },
-                {
-                    "target" : "attributes",
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "var attributes = [];\n\nattributes.push({\"assignmentOperation\":\"mergeWithTarget\", \"name\": \"frIndexedMultivalued2\",\"unassignmentOperation\": \"removeFromTarget\",\"value\": [source.name]})\n\nlogger.info(\"Asgn attributes: \" + attributes);\n\nattributes;"
-                    },
-                    "source" : ""
                 }
             ],
             "policies" : [
@@ -385,7 +376,7 @@
                         "type" : "text/javascript",
                         "globals" : { },
                         "source" : "logger.info(\"Creating Roles<->Members relationships for role: \" + source.name + \" ,source Members: \" + source.members);\n\nvar memberRefs = [];\nvar query, memberRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_user_to_fidc_alpha_user\\\" AND firstId eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Members: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Members: query results for role: \" + source.name + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        memberRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(memberRef)){\n                  memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n                  uniqueRefs.add(memberRef)\n                  logger.info(\"Added member ref : \" + memberRef);\n        } else {\n          logger.info(\"Duplicate member ref found, ignoring: \" + memberRef);\n        }\n\t}\n    \n  }  \n}\n\n\n\nmemberRefs;"
-                        },
+                    },
                     "source" : ""
                 }
             ],

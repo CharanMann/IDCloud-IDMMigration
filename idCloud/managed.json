@@ -369,7 +369,7 @@
                     },
                     "frIndexedMultivalued1": {
                         "deleteQueryConfig": false,
-                        "description": "IDM Role Names",
+                        "description": "Role Names",
                         "isPersonal": false,
                         "isVirtual": true,
                         "items": {
@@ -386,7 +386,7 @@
                         },
                         "returnByDefault": true,
                         "searchable": false,
-                        "title": "IDM Role Names",
+                        "title": "Role Names",
                         "type": "array",
                         "usageDescription": null,
                         "userEditable": false,
@@ -394,7 +394,7 @@
                     },
                     "frIndexedMultivalued2": {
                         "deleteQueryConfig": false,
-                        "description": "IDM Assignment Names",
+                        "description": "Assignment Names",
                         "isPersonal": false,
                         "isVirtual": true,
                         "items": {
@@ -412,7 +412,7 @@
                         },
                         "returnByDefault": true,
                         "searchable": false,
-                        "title": "IDM Assignment Names",
+                        "title": "Assignment Names",
                         "type": "array",
                         "usageDescription": null,
                         "userEditable": false,

@@ -251,7 +251,7 @@
             "onUpdate" : {
                 "type" : "text/javascript",
                 "globals" : { },
-                "source" : "logger.warn('Target role object: = {} ', target);"
+                "source" : "logger.info('Target role object: = {} ', target);"
             }
         },
         {
@@ -350,13 +350,13 @@
             "onUpdate" : {
                 "type" : "text/javascript",
                 "globals" : { },
-                "source" : "logger.warn('Target role object with assignments: = {} ', target);"
+                "source" : "logger.info('Target role object with assignments: = {} ', target);"
             }
         },
         {
-            "name" : "onprem_role_to_fidc_alpha_role_members",
-            "target" : "external/idm/fidc/managed/alpha_role",
-            "source" : "external/idm/65/managed/role",
+            "name" : "onprem_user_to_fidc_alpha_user_roles",
+            "source" : "external/idm/65/managed/user",
+            "target" : "external/idm/fidc/managed/alpha_user",
             "taskThreads" : 2,
             "sourceQuery" : {
                 "_queryFilter" : true,
@@ -367,15 +367,15 @@
             "clusteredSourceReconEnabled" : true,
             "properties" : [
                 {
-                    "source" : "name",
-                    "target" : "name"
+                    "target" : "userName",
+                    "source" : "userName"
                 },
                 {
-                    "target" : "members",
+                    "target" : "roles",
                     "transform" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "source" : "logger.info(\"Creating Roles<->Members relationships for role: \" + source.name + \" ,source Members: \" + source.members);\n\nvar memberRefs = [];\nvar query, memberRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.members != null) {\n  for (member of source.members) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_user_to_fidc_alpha_user\\\" AND firstId eq \\\"' + member._refResourceId + '\\\"'};  \n    logger.info(\"Members: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Members: query results for role: \" + source.name + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        memberRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(memberRef)){\n                  memberRefs.push({\"_ref\":\"managed/alpha_user/\" + memberRef})\n                  uniqueRefs.add(memberRef)\n                  logger.info(\"Added member ref : \" + memberRef);\n        } else {\n          logger.info(\"Duplicate member ref found, ignoring: \" + memberRef);\n        }\n\t}\n    \n  }  \n}\n\n\n\nmemberRefs;"
+                        "source" : "logger.info(\"Creating Users<->Roles relationships for user: \" + source.userName + \" ,source Roles: \" + source.roles);\n\nvar rolesRefs = [];\nvar query, rolesRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.roles != null) {\n  for (role of source.roles) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_role_to_fidc_alpha_role\\\" AND firstId eq \\\"' + role._refResourceId + '\\\"'};  \n    logger.info(\"Roles: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Roles: query results for user: \" + source.userName + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        rolesRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(rolesRef)){\n                  rolesRefs.push({\"_ref\":\"managed/alpha_role/\" + rolesRef})\n                  uniqueRefs.add(rolesRef)\n                  logger.info(\"Added role ref : \" + rolesRef);\n        } else {\n          logger.info(\"Duplicate role ref found, ignoring: \" + rolesRef);\n        }\n\t}\n    \n  }  \n}\n\nrolesRefs;"
                     },
                     "source" : ""
                 }
@@ -430,7 +430,7 @@
                     "situation" : "FOUND"
                 },
                 {
-                    "action" : "CREATE",
+                    "action" : "REPORT",
                     "situation" : "ABSENT"
                 }
             ],
@@ -439,10 +439,10 @@
                     "linkQualifier" : "default",
                     "expressionTree" : {
                         "any" : [
-                            "name"
+                            "userName"
                         ]
                     },
-                    "mapping" : "onprem_role_to_fidc_alpha_role_members",
+                    "mapping" : "onprem_user_to_fidc_alpha_user_roles",
                     "type" : "text/javascript",
                     "file" : "ui/correlateTreeToQueryFilter.js"
                 }
@@ -450,7 +450,7 @@
             "onUpdate" : {
                 "type" : "text/javascript",
                 "globals" : { },
-                "source" : "logger.warn('Target role object with members: = {} ', target);"
+                "source" : "logger.info('Target user object with roles: = {} ', target);"
             }
         }
     ]

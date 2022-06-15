@@ -369,15 +369,6 @@
                 {
                     "target" : "userName",
                     "source" : "userName"
-                },
-                {
-                    "target" : "roles",
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "logger.info(\"Creating Users<->Roles relationships for user: \" + source.userName + \" ,source Roles: \" + source.roles);\n\nvar rolesRefs = [];\nvar query, rolesRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.roles != null) {\n  for (role of source.roles) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_role_to_fidc_alpha_role\\\" AND firstId eq \\\"' + role._refResourceId + '\\\"'};  \n    logger.info(\"Roles: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Roles: query results for user: \" + source.userName + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        rolesRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(rolesRef)){\n                  rolesRefs.push({\"_ref\":\"managed/alpha_role/\" + rolesRef})\n                  uniqueRefs.add(rolesRef)\n                  logger.info(\"Added role ref : \" + rolesRef);\n        } else {\n          logger.info(\"Duplicate role ref found, ignoring: \" + rolesRef);\n        }\n\t}\n    \n  }  \n}\n\nrolesRefs;"
-                    },
-                    "source" : ""
                 }
             ],
             "policies" : [
@@ -422,15 +413,23 @@
                     "situation" : "ALL_GONE"
                 },
                 {
-                    "action" : "UPDATE",
+                    "action" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "logger.info(\"Creating Users<->Roles relationships for user: \" + source.userName + \" ,source Roles: \" + source.roles);\n\nvar rolesRefs = [];\nvar query, rolesRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.roles != null) {\n  for (role of source.roles) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_role_to_fidc_alpha_role\\\" AND firstId eq \\\"' + role._refResourceId + '\\\"'};  \n    logger.info(\"Roles: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Roles: query results for user: \" + source.userName + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        rolesRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(rolesRef)){\n                  rolesRefs.push({\"_ref\":\"managed/alpha_role/\" + rolesRef})\n                  uniqueRefs.add(rolesRef)\n                  logger.info(\"Added role ref : \" + rolesRef);\n        } else {\n          logger.info(\"Duplicate role ref found, ignoring: \" + rolesRef);\n        }\n\t}\n    \n  }\n  \n  logger.info(\"Patching external IDM user: \" + target.userName + \" ,Roles: \" + rolesRefs);\n  openidm.patch('external/idm/fidc/managed/alpha_user/' + target._id, null, [{\"operation\":\"replace\", \"field\":\"/roles\", \"value\":rolesRefs}]);\n\n}\n\n'REPORT'"
+                    },
                     "situation" : "CONFIRMED"
                 },
                 {
-                    "action" : "UPDATE",
+                    "action" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "source" : "logger.info(\"Creating Users<->Roles relationships for user: \" + source.userName + \" ,source Roles: \" + source.roles);\n\nvar rolesRefs = [];\nvar query, rolesRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.roles != null) {\n  for (role of source.roles) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_role_to_fidc_alpha_role\\\" AND firstId eq \\\"' + role._refResourceId + '\\\"'};  \n    logger.info(\"Roles: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Roles: query results for user: \" + source.userName + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        rolesRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(rolesRef)){\n                  rolesRefs.push({\"_ref\":\"managed/alpha_role/\" + rolesRef})\n                  uniqueRefs.add(rolesRef)\n                  logger.info(\"Added role ref : \" + rolesRef);\n        } else {\n          logger.info(\"Duplicate role ref found, ignoring: \" + rolesRef);\n        }\n\t}\n    \n  }\n  \n  logger.info(\"Patching external IDM user: \" + target.userName + \" ,Roles: \" + rolesRefs);\n  openidm.patch('external/idm/fidc/managed/alpha_user/' + target._id, null, [{\"operation\":\"replace\", \"field\":\"/roles\", \"value\":rolesRefs}]);\n\n}\n\n'LINK'"
+                    },
                     "situation" : "FOUND"
                 },
                 {
-                    "action" : "REPORT",
+                    "action" : "IGNORE",
                     "situation" : "ABSENT"
                 }
             ],
@@ -438,7 +437,7 @@
                 {
                     "linkQualifier" : "default",
                     "expressionTree" : {
-                        "any" : [
+                        "all" : [
                             "userName"
                         ]
                     },
@@ -450,7 +449,7 @@
             "onUpdate" : {
                 "type" : "text/javascript",
                 "globals" : { },
-                "source" : "logger.info('Target user object with roles: = {} ', target);"
+                "source" : "logger.info('Target object : = {} ', target);"
             }
         }
     ]

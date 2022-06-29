@@ -269,15 +269,6 @@
                 {
                     "source" : "name",
                     "target" : "name"
-                },
-                {
-                    "target" : "assignments",
-                    "transform" : {
-                        "type" : "text/javascript",
-                        "globals" : { },
-                        "source" : "logger.info(\"Creating Roles<->Assignments relationships for role: \" + source.name + \" ,source Assignments: \" + source.assignments);\nvar assignmentRefs = [];\nvar assignmentRef;\nconst uniqueRefs = new Set();\n\nif (source.assignments != null) {\n  for (assignment of source.assignments) {\n    \n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_asgn_to_fidc_alpha_asgn\\\" AND firstId eq \\\"' + assignment._refResourceId + '\\\"'};  \n    logger.info(\"Assignments: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Assignments: query results for role: \" + source.name + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        assignmentRef =  queryResult.result[0].secondId;  \n        \n        if (!uniqueRefs.has(assignmentRef)){\n                  assignmentRefs.push({\"_ref\": \"managed/alpha_assignment/\" + assignmentRef})\n                  uniqueRefs.add(assignmentRef)\n                  logger.info(\"Added assignment ref : \" + assignmentRef);\n        } else {\n          logger.info(\"Duplicate assignment ref found, ignoring: \" + assignmentRef);\n        }\n\t}\n  }  \n}\n  \nassignmentRefs;"
-                    },
-                    "source" : ""
                 }
             ],
             "policies" : [
@@ -322,11 +313,19 @@
                     "situation" : "ALL_GONE"
                 },
                 {
-                    "action" : "UPDATE",
+                    "action" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "file" : "script/assignment-role-found.js"
+                    },
                     "situation" : "CONFIRMED"
                 },
                 {
-                    "action" : "UPDATE",
+                    "action" : {
+                        "type" : "text/javascript",
+                        "globals" : { },
+                        "file" : "script/assignment-role-found.js"
+                    },
                     "situation" : "FOUND"
                 },
                 {
@@ -428,7 +427,7 @@
                     "action" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "source" : "logger.info(\"Creating Users<->Roles relationships for user: \" + source.userName + \" ,source Roles: \" + source.roles);\n\nvar rolesRefs = [];\nvar query, rolesRef, userName;\nconst uniqueRefs = new Set();\n\nif (source.roles != null) {\n  for (role of source.roles) {\n    // Retrieve _id from repo links\n    query = {'_queryFilter': 'linkType eq \\\"onprem_role_to_fidc_alpha_role\\\" AND firstId eq \\\"' + role._refResourceId + '\\\"'};  \n    logger.info(\"Roles: query filter for Proxy repo: \" + query._queryFilter);\n\tvar queryResult = openidm.query(\"repo/link\", query);\n    \n    logger.info(\"Roles: query results for user: \" + source.userName + \" ,from Proxy Repo: \" + queryResult);\n                                                                 \n\tif (queryResult.resultCount >= 1) {\n        rolesRef = queryResult.result[0].secondId;  \n        if (!uniqueRefs.has(rolesRef)){\n                  rolesRefs.push({\"_ref\":\"managed/alpha_role/\" + rolesRef})\n                  uniqueRefs.add(rolesRef)\n                  logger.info(\"Added role ref : \" + rolesRef);\n        } else {\n          logger.info(\"Duplicate role ref found, ignoring: \" + rolesRef);\n        }\n\t}\n    \n  }\n  \n  logger.info(\"Patching external IDM user: \" + target.userName + \" with roles: \" +  JSON.stringify(rolesRefs));\n  openidm.patch('external/idm/fidc/managed/alpha_user/' + target._id, null, [{\"operation\":\"replace\", \"field\":\"/roles\", \"value\":rolesRefs}]);\n\n}\n\n'LINK'"
+                        "file" : "script/user-role-found.js"
                     },
                     "situation" : "FOUND"
                 },

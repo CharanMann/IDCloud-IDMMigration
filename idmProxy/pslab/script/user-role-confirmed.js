@@ -1,4 +1,7 @@
-logger.info("Creating Users<->Roles relationships for user: " + source.userName + " ,source Roles: " + source.roles);
+/**
+ * Custom sync mapping's behavior script for onprem_user_to_fidc_alpha_user_roles mapping (Situation: Confirmed)
+ */
+logger.info("Updating Users<->Roles relationships for user: " + source.userName + " ,source Roles: " + source.roles);
 
 var query, rolesRef, userName;
 const targetRefs = new Set();
@@ -8,18 +11,16 @@ const sourceRefs = new Set();
 if (target.effectiveRoles != null) {
   for (role of target.effectiveRoles) {
     targetRefs.add(role._refResourceId);
-    logger.info("Target external IDM user: " + target.userName + " role: " + role._refResourceId);
   }
-  logger.info("Target external IDM user: " + target.userName + " roles count: " + targetRefs.size);
+  logger.info("Roles: Target external IDM user: " + target.userName + " roles count: " + targetRefs.size);
 }
 
 // Get all the source roles
 if (source.roles != null) {
   for (role of source.roles) {
     sourceRefs.add(role._refResourceId);
-    logger.info("Source external IDM user: " + source.userName + " role: " + role._refResourceId);
   }
-  logger.info("Source external IDM user: " + source.userName + " roles count: " + sourceRefs.size);
+  logger.info("Roles: Source external IDM user: " + source.userName + " roles count: " + sourceRefs.size);
 }
 
 // Add qualifying new roles
@@ -74,11 +75,10 @@ if (targetRefs != null && targetRefs.size) {
         if (queryResult.resultCount >= 1) {
           var roles = queryResult.result[0].roles;
 
-          // Get the roles object to be deleted matching the targetRef 
-          var rolesObject = roles.filter((r) => r._refResourceId === targetRef)    
-          if (rolesObject && rolesObject.length >=1 )
-          {
-            rolesObject = rolesObject[0]
+          // Get the roles object to be deleted matching the targetRef
+          var rolesObject = roles.filter((r) => r._refResourceId === targetRef);
+          if (rolesObject && rolesObject.length >= 1) {
+            rolesObject = rolesObject[0];
             logger.info("Roles: Removing role from user: " + target.userName + " ,role object: " + rolesObject);
             openidm.patch("external/idm/fidc/managed/alpha_user/" + target._id, null, [
               { operation: "remove", field: "/roles", value: rolesObject },

@@ -31,7 +31,7 @@
             "directory" : "&{idm.instance.dir}"
         },
         "project-script" : {
-            "directory" : "&{idm.instance.dir}/script"
+            "directory" : "&{idm.instance.dir}/pslab/script"
         }
     }
 }

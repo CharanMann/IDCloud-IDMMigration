@@ -3,7 +3,7 @@
  */
 logger.info("Updating Users<->Roles relationships for user: " + source.userName + " ,source Roles: " + source.roles);
 
-var query, rolesRef, userName;
+var query, rolesRef;
 const targetRefs = new Set();
 const sourceRefs = new Set();
 
@@ -76,12 +76,12 @@ if (targetRefs != null && targetRefs.size) {
           var roles = queryResult.result[0].roles;
 
           // Get the roles object to be deleted matching the targetRef
-          var rolesObject = roles.filter((r) => r._refResourceId === targetRef);
-          if (rolesObject && rolesObject.length >= 1) {
-            rolesObject = rolesObject[0];
-            logger.info("Roles: Removing role from user: " + target.userName + " ,role object: " + rolesObject);
+          var asgnObject = roles.filter((r) => r._refResourceId === targetRef);
+          if (asgnObject && asgnObject.length >= 1) {
+            asgnObject = asgnObject[0];
+            logger.info("Roles: Removing role from user: " + target.userName + " ,role object: " + asgnObject);
             openidm.patch("external/idm/fidc/managed/alpha_user/" + target._id, null, [
-              { operation: "remove", field: "/roles", value: rolesObject },
+              { operation: "remove", field: "/roles", value: asgnObject },
             ]);
           }
         }

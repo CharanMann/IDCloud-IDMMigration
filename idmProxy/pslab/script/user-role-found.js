@@ -4,7 +4,7 @@
 logger.info("Creating Users<->Roles relationships for user: " + source.userName + " ,source Roles: " + source.roles);
 
 var rolesRefs = [];
-var query, rolesRef, userName;
+var query, rolesRef;
 const uniqueRefs = new Set();
 
 if (source.roles != null) {

@@ -258,6 +258,10 @@
             "name" : "onprem_role_to_fidc_alpha_role_assignments",
             "target" : "external/idm/fidc/managed/alpha_role",
             "source" : "external/idm/65/managed/role",
+            "targetQuery" : {
+                "_queryFilter" : true,
+                "_fields" : "*,*_ref"
+            },
             "sourceQuery" : {
                 "_queryFilter" : true,
                 "_fields" : "*,*_ref"
@@ -316,7 +320,7 @@
                     "action" : {
                         "type" : "text/javascript",
                         "globals" : { },
-                        "file" : "script/assignment-role-found.js"
+                        "file" : "script/assignment-role-confirmed.js"
                     },
                     "situation" : "CONFIRMED"
                 },

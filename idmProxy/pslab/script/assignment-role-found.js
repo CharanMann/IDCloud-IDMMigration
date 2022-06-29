@@ -1,5 +1,5 @@
 /**
- * Custom sync mapping's behavior script for oonprem_role_to_fidc_alpha_role_assignments mapping (Situation: Found)
+ * Custom sync mapping's behavior script for onprem_role_to_fidc_alpha_role_assignments mapping (Situation: Found)
  */
 logger.info("Creating Roles<->Assignments relationships for role: " + source.name + " ,source Assignments: " + source.assignments);
 var assignmentRefs = [];

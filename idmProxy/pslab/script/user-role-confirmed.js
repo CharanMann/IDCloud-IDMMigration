@@ -8,8 +8,18 @@ const targetRefs = new Set();
 const sourceRefs = new Set();
 
 // Get all the existing target roles
-if (target.effectiveRoles != null) {
-  for (role of target.effectiveRoles) {
+// Query qualying role object from target IDM
+query = { _queryFilter: 'userName eq "' + target.userName + '"' };
+logger.info("Roles: query filter for target IDM: " + query._queryFilter);
+queryResult = openidm.query("external/idm/fidc/managed/alpha_user", query, ["roles"]);
+logger.info("Roles: query results for target user: " + source.userName + " ,roles: " + queryResult);
+var targetRoles;
+if (queryResult.resultCount >= 1) {
+  targetRoles = queryResult.result[0].roles;
+}
+
+if (targetRoles != null) {
+  for (role of targetRoles) {
     targetRefs.add(role._refResourceId);
   }
   logger.info("Roles: Target external IDM user: " + target.userName + " roles count: " + targetRefs.size);
@@ -63,25 +73,14 @@ if (targetRefs != null && targetRefs.size) {
     if (queryResult.resultCount >= 1) {
       rolesRef = queryResult.result[0].firstId;
       if (!sourceRefs.has(rolesRef)) {
-        logger.info("Roles: Removing role from user: " + target.userName + " ,role: " + rolesRef);
-
-        // Query qualying role object from target IDM
-        query = { _queryFilter: 'userName eq "' + target.userName + '"' };
-        logger.info("Roles: query filter for target IDM: " + query._queryFilter);
-
-        queryResult = openidm.query("external/idm/fidc/managed/alpha_user", query, ["roles"]);
-        logger.info("Roles: query results for target user: " + source.userName + " ,roles: " + queryResult);
-
-        if (queryResult.resultCount >= 1) {
-          var roles = queryResult.result[0].roles;
-
+        if (targetRoles) {
           // Get the roles object to be deleted matching the targetRef
-          var asgnObject = roles.filter((r) => r._refResourceId === targetRef);
-          if (asgnObject && asgnObject.length >= 1) {
-            asgnObject = asgnObject[0];
-            logger.info("Roles: Removing role from user: " + target.userName + " ,role object: " + asgnObject);
+          var roleObject = targetRoles.filter((r) => r._refResourceId === targetRef);
+          if (roleObject && roleObject.length >= 1) {
+            roleObject = roleObject[0];
+            logger.info("Roles: Removing role from user: " + target.userName + " ,role object: " + roleObject);
             openidm.patch("external/idm/fidc/managed/alpha_user/" + target._id, null, [
-              { operation: "remove", field: "/roles", value: asgnObject },
+              { operation: "remove", field: "/roles", value: roleObject },
             ]);
           }
         }

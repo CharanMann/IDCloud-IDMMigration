@@ -258,10 +258,6 @@
             "name" : "onprem_role_to_fidc_alpha_role_assignments",
             "target" : "external/idm/fidc/managed/alpha_role",
             "source" : "external/idm/65/managed/role",
-            "targetQuery" : {
-                "_queryFilter" : true,
-                "_fields" : "*,*_ref"
-            },
             "sourceQuery" : {
                 "_queryFilter" : true,
                 "_fields" : "*,*_ref"
@@ -361,10 +357,6 @@
             "source" : "external/idm/65/managed/user",
             "target" : "external/idm/fidc/managed/alpha_user",
             "taskThreads" : 2,
-            "targetQuery" : {
-                "_queryFilter" : true,
-                "_fields" : "*,*_ref"
-            },
             "sourceQuery" : {
                 "_queryFilter" : true,
                 "_fields" : "*,*_ref"

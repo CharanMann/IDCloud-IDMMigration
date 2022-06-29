@@ -73,8 +73,6 @@ if (targetRefs != null && targetRefs.size) {
     if (queryResult.resultCount >= 1) {
       assignmentsRef = queryResult.result[0].firstId;
       if (!sourceRefs.has(assignmentsRef)) {
-        logger.info("Assignments: Removing assignment from role: " + target.name + " ,assignment: " + assignmentsRef);
-
         // Query qualying assignment object from target IDM
         query = { _queryFilter: 'name eq "' + target.name + '"' };
         logger.info("Assignments: query filter for target IDM: " + query._queryFilter);
@@ -87,7 +85,7 @@ if (targetRefs != null && targetRefs.size) {
           var asgnObject = targetAssignments.filter((a) => a._refResourceId === targetRef);
           if (asgnObject && asgnObject.length >= 1) {
             asgnObject = asgnObject[0];
-            logger.info("Assignments: Removing assignment from role: " + target.role + " ,assignment object: " + asgnObject);
+            logger.info("Assignments: Removing assignment from role: " + target.name + " ,assignment object: " + asgnObject);
             openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, [
               { operation: "remove", field: "/assignments", value: asgnObject },
             ]);

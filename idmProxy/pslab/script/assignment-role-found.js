@@ -1,6 +1,9 @@
 /**
- * Custom sync mapping's behavior script for onprem_role_to_fidc_alpha_role_assignments mapping (Situation: Found)
+ * @file Custom sync mapping's behavior script for onprem_role_to_fidc_alpha_role_assignments mapping (Situation: Found)
+ * @version 1.0
+ * @keywords idm script
  */
+
 logger.info("Creating Roles<->Assignments relationships for role: " + source.name + " ,source Assignments: " + source.assignments);
 var assignmentRefs = [];
 var assignmentRef;
@@ -8,7 +11,7 @@ const uniqueRefs = new Set();
 
 if (source.assignments != null) {
   for (assignment of source.assignments) {
-    // Retrieve _id from repo links
+    // Retrieve corresponding link _id from repo links
     query = { _queryFilter: 'linkType eq "onprem_asgn_to_fidc_alpha_asgn" AND firstId eq "' + assignment._refResourceId + '"' };
     logger.info("Assignments: query filter for Proxy repo: " + query._queryFilter);
     var queryResult = openidm.query("repo/link", query);

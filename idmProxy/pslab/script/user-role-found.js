@@ -1,6 +1,9 @@
 /**
- * Custom sync mapping's behavior script for onprem_user_to_fidc_alpha_user_roles mapping (Situation: Found)
+ * @file Custom sync mapping's behavior script for onprem_user_to_fidc_alpha_user_roles mapping (Situation: Found)
+ * @version 1.0
+ * @keywords idm script
  */
+
 logger.info("Creating Users<->Roles relationships for user: " + source.userName + " ,source Roles: " + source.roles);
 
 var rolesRefs = [];
@@ -9,7 +12,7 @@ const uniqueRefs = new Set();
 
 if (source.roles != null) {
   for (role of source.roles) {
-    // Retrieve _id from repo links
+    // Retrieve corresponding link _id from repo links
     query = { _queryFilter: 'linkType eq "onprem_role_to_fidc_alpha_role" AND firstId eq "' + role._refResourceId + '"' };
     logger.info("Roles: query filter for Proxy repo: " + query._queryFilter);
     var queryResult = openidm.query("repo/link", query);

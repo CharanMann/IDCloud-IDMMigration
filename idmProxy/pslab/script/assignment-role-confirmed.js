@@ -1,6 +1,9 @@
 /**
- * Custom sync mapping's behavior script for onprem_role_to_fidc_alpha_role_assignments mapping (Situation: Confirmed)
+ * @file Custom sync mapping's behavior script for onprem_role_to_fidc_alpha_role_assignments mapping (Situation: Confirmed)
+ * @version 1.0
+ * @keywords idm script
  */
+
 logger.info("Updating Roles<->Assignments relationships for role: " + source.name + " ,source Assignments: " + source.assignments);
 
 var query, assignmentsRef;
@@ -8,7 +11,6 @@ const targetRefs = new Set();
 const sourceRefs = new Set();
 
 // Get all the existing target assignments
-// Query qualying assignment object from target IDM
 query = { _queryFilter: 'name eq "' + target.name + '"' };
 logger.info("Assignments: query filter for target IDM: " + query._queryFilter);
 queryResult = openidm.query("external/idm/fidc/managed/alpha_role", query, ["assignments"]);
@@ -37,7 +39,7 @@ if (source.assignments != null) {
 if (sourceRefs != null && sourceRefs.size) {
   for (sourceRef of sourceRefs) {
     logger.info("Assignments: Checking for new assignments for role: " + source.name);
-    // Retrieve _id from repo links
+    // Retrieve corresponding link _id from repo links
     query = { _queryFilter: 'linkType eq "onprem_asgn_to_fidc_alpha_asgn" AND firstId eq "' + sourceRef + '"' };
     logger.info("Assignments: query filter for Proxy repo: " + query._queryFilter);
     var queryResult = openidm.query("repo/link", query);
@@ -64,7 +66,7 @@ if (sourceRefs != null && sourceRefs.size) {
 if (targetRefs != null && targetRefs.size) {
   for (targetRef of targetRefs) {
     logger.info("Assignments: Checking for deleted assignment for role: " + source.name);
-    // Retrieve _id from repo links
+    // Retrieve corresponding link _id from repo links
     query = { _queryFilter: 'linkType eq "onprem_asgn_to_fidc_alpha_asgn" AND secondId eq "' + targetRef + '"' };
     logger.info("Assignments: query filter for Proxy repo: " + query._queryFilter);
     var queryResult = openidm.query("repo/link", query);

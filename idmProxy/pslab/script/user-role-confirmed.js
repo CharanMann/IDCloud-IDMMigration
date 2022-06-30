@@ -1,6 +1,9 @@
 /**
- * Custom sync mapping's behavior script for onprem_user_to_fidc_alpha_user_roles mapping (Situation: Confirmed)
+ * @file Custom sync mapping's behavior script for onprem_user_to_fidc_alpha_user_roles mapping (Situation: Confirmed)
+ * @version 1.0
+ * @keywords idm script
  */
+
 logger.info("Updating Users<->Roles relationships for user: " + source.userName + " ,source Roles: " + source.roles);
 
 var query, rolesRef;
@@ -8,7 +11,6 @@ const targetRefs = new Set();
 const sourceRefs = new Set();
 
 // Get all the existing target roles
-// Query qualying role object from target IDM
 query = { _queryFilter: 'userName eq "' + target.userName + '"' };
 logger.info("Roles: query filter for target IDM: " + query._queryFilter);
 queryResult = openidm.query("external/idm/fidc/managed/alpha_user", query, ["roles"]);
@@ -37,7 +39,7 @@ if (source.roles != null) {
 if (sourceRefs != null && sourceRefs.size) {
   for (sourceRef of sourceRefs) {
     logger.info("Roles: Checking for new roles for user: " + source.userName);
-    // Retrieve _id from repo links
+    // Retrieve corresponding link _id from repo links
     query = { _queryFilter: 'linkType eq "onprem_role_to_fidc_alpha_role" AND firstId eq "' + sourceRef + '"' };
     logger.info("Roles: query filter for Proxy repo: " + query._queryFilter);
     var queryResult = openidm.query("repo/link", query);
@@ -64,7 +66,7 @@ if (sourceRefs != null && sourceRefs.size) {
 if (targetRefs != null && targetRefs.size) {
   for (targetRef of targetRefs) {
     logger.info("Roles: Checking for deleted roles for user: " + source.userName);
-    // Retrieve _id from repo links
+    // Retrieve corresponding link _id from repo links
     query = { _queryFilter: 'linkType eq "onprem_role_to_fidc_alpha_role" AND secondId eq "' + targetRef + '"' };
     logger.info("Roles: query filter for Proxy repo: " + query._queryFilter);
     var queryResult = openidm.query("repo/link", query);

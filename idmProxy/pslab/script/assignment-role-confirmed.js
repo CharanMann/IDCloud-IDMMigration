@@ -37,6 +37,7 @@ if (source.assignments != null) {
 
 // Add qualifying new assignments
 if (sourceRefs != null && sourceRefs.size) {
+  var deltaObjects = [];
   for (sourceRef of sourceRefs) {
     logger.info("Assignments: Checking for new assignments for role: " + source.name);
     // Retrieve corresponding link _id from repo links
@@ -48,11 +49,8 @@ if (sourceRefs != null && sourceRefs.size) {
     if (queryResult.resultCount >= 1) {
       assignmentsRef = queryResult.result[0].secondId;
       if (!targetRefs.has(assignmentsRef)) {
-        logger.info("Assignments: Adding new assignment to role: " + target.name + " ,assignment: " + assignmentsRef);
-        assignmentsRef = { _ref: "managed/alpha_assignment/" + assignmentsRef };
-        openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, [
-          { operation: "add", field: "/assignments/-", value: assignmentsRef },
-        ]);
+        logger.info("Assignments: Considering new assignment to be added for role:  " + target.name + " ,assignment: " + assignmentsRef);
+        deltaObjects.push({ operation: "add", field: "/assignments/-", value: { _ref: "managed/alpha_assignment/" + assignmentsRef } });
       } else {
         logger.info("Assignments: No need to add, existing assignment for role: " + source.name + " ,assignment ref: " + assignmentsRef);
       }
@@ -60,10 +58,17 @@ if (sourceRefs != null && sourceRefs.size) {
       logger.info("Assignments: No query results for role: " + source.name + " ,assignment: " + sourceRef);
     }
   }
+
+  // Adding new objects
+  if (deltaObjects.length >= 1) {
+    logger.info("Assignments: Adding new assignments to role:" + target.name + " ,assignments: " + JSON.stringify(deltaObjects));
+    openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, deltaObjects);
+  }
 }
 
 // Remove qualifying old assignments
 if (targetRefs != null && targetRefs.size) {
+  var deltaObjects = [];
   for (targetRef of targetRefs) {
     logger.info("Assignments: Checking for deleted assignment for role: " + source.name);
     // Retrieve corresponding link _id from repo links
@@ -87,10 +92,10 @@ if (targetRefs != null && targetRefs.size) {
           var asgnObject = targetAssignments.filter((a) => a._refResourceId === targetRef);
           if (asgnObject && asgnObject.length >= 1) {
             asgnObject = asgnObject[0];
-            logger.info("Assignments: Removing assignment from role: " + target.name + " ,assignment object: " + asgnObject);
-            openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, [
-              { operation: "remove", field: "/assignments", value: asgnObject },
-            ]);
+            logger.info(
+              "Assignments: Considering assignment to be deleted from role: " + target.name + " ,assignment object: " + asgnObject
+            );
+            deltaObjects.push({ operation: "remove", field: "/assignments", value: asgnObject });
           }
         }
       } else {
@@ -99,6 +104,12 @@ if (targetRefs != null && targetRefs.size) {
     } else {
       logger.info("Assignments: No query results for role: " + source.name + " ,assignment: " + targetRef);
     }
+  }
+
+  // Remove deleted objects
+  if (deltaObjects.length >= 1) {
+    logger.info("Assignments: Deleting assignments from role: " + target.name + " ,assignments: " + JSON.stringify(deltaObjects));
+    openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, deltaObjects);
   }
 }
 

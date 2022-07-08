@@ -37,6 +37,7 @@ if (source.roles != null) {
 
 // Add qualifying new roles
 if (sourceRefs != null && sourceRefs.size) {
+  var deltaObjects = [];
   for (sourceRef of sourceRefs) {
     logger.info("Roles: Checking for new roles for user: " + source.userName);
     // Retrieve corresponding link _id from repo links
@@ -48,11 +49,8 @@ if (sourceRefs != null && sourceRefs.size) {
     if (queryResult.resultCount >= 1) {
       rolesRef = queryResult.result[0].secondId;
       if (!targetRefs.has(rolesRef)) {
-        logger.info("Roles: Adding new role to user: " + target.userName + " ,role: " + rolesRef);
-        rolesRef = { _ref: "managed/alpha_role/" + rolesRef };
-        openidm.patch("external/idm/fidc/managed/alpha_user/" + target._id, null, [
-          { operation: "add", field: "/roles/-", value: rolesRef },
-        ]);
+        logger.info("Roles: Considering new role to be added for user: " + target.userName + " ,role: " + rolesRef);
+        deltaObjects.push({ operation: "add", field: "/roles/-", value: { _ref: "managed/alpha_role/" + rolesRef } });
       } else {
         logger.info("Roles: No need to add, existing role for user: " + source.userName + " ,role ref: " + rolesRef);
       }
@@ -60,10 +58,17 @@ if (sourceRefs != null && sourceRefs.size) {
       logger.info("Roles: No query results for user: " + source.userName + " ,role: " + sourceRef);
     }
   }
+
+  // Adding new objects
+  if (deltaObjects.length >= 1) {
+    logger.info("Roles: Adding new roles to user: " + target.userName + " ,roles: " + JSON.stringify(deltaObjects));
+    openidm.patch("external/idm/fidc/managed/alpha_user/" + target._id, null, deltaObjects);
+  }
 }
 
 // Remove qualifying old roles
 if (targetRefs != null && targetRefs.size) {
+  var deltaObjects = [];
   for (targetRef of targetRefs) {
     logger.info("Roles: Checking for deleted roles for user: " + source.userName);
     // Retrieve corresponding link _id from repo links
@@ -80,10 +85,8 @@ if (targetRefs != null && targetRefs.size) {
           var roleObject = targetRoles.filter((r) => r._refResourceId === targetRef);
           if (roleObject && roleObject.length >= 1) {
             roleObject = roleObject[0];
-            logger.info("Roles: Removing role from user: " + target.userName + " ,role object: " + roleObject);
-            openidm.patch("external/idm/fidc/managed/alpha_user/" + target._id, null, [
-              { operation: "remove", field: "/roles", value: roleObject },
-            ]);
+            logger.info("Roles: Considering role to be deleted from user: " + target.userName + " ,role object: " + roleObject);
+            deltaObjects.push({ operation: "remove", field: "/roles", value: roleObject });
           }
         }
       } else {
@@ -92,6 +95,12 @@ if (targetRefs != null && targetRefs.size) {
     } else {
       logger.info("Roles: No query results for user: " + source.userName + " ,role: " + targetRef);
     }
+  }
+
+  // Remove deleted objects
+  if (deltaObjects.length >= 1) {
+    logger.info("Roles: Deleting roles from user: " + target.userName + " ,roles: " + JSON.stringify(deltaObjects));
+    openidm.patch("external/idm/fidc/managed/alpha_user/" + target._id, null, deltaObjects);
   }
 }
 

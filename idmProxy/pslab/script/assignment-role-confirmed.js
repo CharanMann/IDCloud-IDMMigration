@@ -35,9 +35,11 @@ if (source.assignments != null) {
   logger.info("Assignments: Source external IDM role: " + source.name + " assignments count: " + sourceRefs.size);
 }
 
+// Array for delta objects
+var deltaObjects = [];
+
 // Add qualifying new assignments
 if (sourceRefs != null && sourceRefs.size) {
-  var deltaObjects = [];
   for (sourceRef of sourceRefs) {
     logger.info("Assignments: Checking for new assignments for role: " + source.name);
     // Retrieve corresponding link _id from repo links
@@ -58,17 +60,10 @@ if (sourceRefs != null && sourceRefs.size) {
       logger.info("Assignments: No query results for role: " + source.name + " ,assignment: " + sourceRef);
     }
   }
-
-  // Adding new objects
-  if (deltaObjects.length >= 1) {
-    logger.info("Assignments: Adding new assignments to role:" + target.name + " ,assignments: " + JSON.stringify(deltaObjects));
-    openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, deltaObjects);
-  }
 }
 
 // Remove qualifying old assignments
 if (targetRefs != null && targetRefs.size) {
-  var deltaObjects = [];
   for (targetRef of targetRefs) {
     logger.info("Assignments: Checking for deleted assignment for role: " + source.name);
     // Retrieve corresponding link _id from repo links
@@ -105,12 +100,12 @@ if (targetRefs != null && targetRefs.size) {
       logger.info("Assignments: No query results for role: " + source.name + " ,assignment: " + targetRef);
     }
   }
+}
 
-  // Remove deleted objects
-  if (deltaObjects.length >= 1) {
-    logger.info("Assignments: Deleting assignments from role: " + target.name + " ,assignments: " + JSON.stringify(deltaObjects));
-    openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, deltaObjects);
-  }
+// Add/Remove objects
+if (deltaObjects.length >= 1) {
+  logger.info("Assignments: Adding/Removing assignments for role: " + target.name + " ,assignments: " + JSON.stringify(deltaObjects));
+  openidm.patch("external/idm/fidc/managed/alpha_role/" + target._id, null, deltaObjects);
 }
 
 ("REPORT");

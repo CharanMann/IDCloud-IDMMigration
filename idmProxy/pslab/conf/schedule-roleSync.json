@@ -1,20 +1,20 @@
 {
+    "isCron" : true,
     "enabled" : true,
     "persisted" : true,
-    "recoverable" : false,
-    "misfirePolicy" : "fireAndProceed",
-    "schedule" : "0 0 2 * * ?",
-    "repeatInterval" : 0,
-    "repeatCount" : 0,
     "type" : "cron",
+    "misfirePolicy" : "fireAndProceed",
     "invokeService" : "sync",
+    "invokeLogLevel" : "info",
+    "timeZone" : null,
+    "startTime" : null,
+    "endTime" : null,
+    "concurrentExecution" : false,
     "invokeContext" : {
         "action" : "reconcile",
         "mapping" : "onprem_role_to_fidc_alpha_role"
     },
-    "invokeLogLevel" : "info",
-    "startTime" : null,
-    "endTime" : null,
-    "concurrentExecution" : false,
-    "previousRunDate" : null
+    "schedule" : "0 0 1 * * ?"
 }
+
+

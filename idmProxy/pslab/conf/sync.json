@@ -170,7 +170,6 @@
             "source" : "external/idm/65/managed/role",
             "reconSourceQueryPaging" : true,
             "reconSourceQueryPageSize" : 10000,
-            "clusteredSourceReconEnabled" : true,
             "properties" : [
                 {
                     "source" : "description",
@@ -264,7 +263,6 @@
             },
             "reconSourceQueryPaging" : true,
             "reconSourceQueryPageSize" : 10000,
-            "clusteredSourceReconEnabled" : true,
             "properties" : [
                 {
                     "source" : "name",
@@ -363,7 +361,6 @@
             },
             "reconSourceQueryPaging" : true,
             "reconSourceQueryPageSize" : 10000,
-            "clusteredSourceReconEnabled" : true,
             "properties" : [
                 {
                     "target" : "userName",
